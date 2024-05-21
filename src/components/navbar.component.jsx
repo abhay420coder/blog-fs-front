@@ -95,12 +95,12 @@ const Navbar =() =>{
                 </Link>
 
                 <Link to="/signIn" className="btn-dark py-2" title="Log In">
-                    <i class="fi fi-rr-sign-in-alt"></i>
+                    <i className="fi fi-rr-sign-in-alt"></i>
                     {/* <p>Sign In</p> */}
                 </Link>
 
                 <Link to="/signUp" className="btn-light py-2 hidden" title="Sign Up">
-                    <i class="fi fi-br-exit"></i>
+                    <i className="fi fi-br-exit"></i>
                     {/* <p>Sign Up</p> */}
                 </Link>
             </div>

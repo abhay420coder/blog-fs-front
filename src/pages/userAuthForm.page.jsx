@@ -5,37 +5,112 @@ import googlepng from "../imgs/google.png"
 import {InputBox} from "../components/input.component";
 import {AnimationWrapper} from "../common/page-animation"
 import { Link, Outlet } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+
+// alert library
+import { Toaster, toast } from "react-hot-toast";
+import axios from "axios";
+import { storeInSession } from "../common/session";
+
+
 
 
 const UserAuthForm = ({type}) =>{
-    const authForm = userRef();
+    
+    // http server connected 
+    const userAuthThroughServer = (serverRoute , formData) =>{
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN+serverRoute , formData)
+        .then(({data})=>{
+            console.log(data);
+            storeInSession("user",JSON.stringify(data))
+            console.log(sessionStorage);
+        })
+        .catch(({response})=>{
+            toast.error(response.data.error)
+        })
+    }
 
+    // ex:- email :- ak8294836065@hotmail.com    pass:-Amu@2020    Name:- Abhay Kumar
 
     let handleSubmit = (e)=>{
         e.preventDefault();
 
-        // form data
-        let form = new FormData(authForm.current)
-        let formData = {}
-        console.log(form.entries());
+        let serverRoute = "/"+type
 
+        let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
+        let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+
+
+
+
+        // getting form data after submitting the form
+        let form = new FormData(authFormElement)
+        let formData = {}
+        console.log("form :- " , form.entries);
         for(let [key,value] of form.entries()){
             formData[key] = value
         }
-        console.log(formData);
+        console.log("form Data before validation" , formData);
+
+
+
+
+
+
+        // form Validation
+        let {fullName , email , password , confirmPassword} = formData // it eill destructuirize -> fullName => formData.fullName , email => formData.email
+        console.log(`fullName :- ${fullName} email :- ${email}   password  :- ${password}  confirmPassword :- ${confirmPassword} `);
+
+        if(fullName){
+            if(fullName.length < 3){
+                return toast.error("Fullname must be at least 3 letters long")
+                
+            }
+        }
+
+        if(!email.length){
+            return toast.error("Enter Email") 
+        }
+        // check email pattern is valid or not
+        if(!emailRegex.test(email)){
+            return toast.error("Enter Valid Email")
+            
+        }
+
+        if(!password.length){
+            return toast.error("Enter Password")
+        }
+        // check password pattern is valid or not
+        if(!passwordRegex.test(password)){
+            return toast.error("Password should be 6 to 20 characters long with a numeric , 1 lowercase and 1 uppercase letters")
+            
+        }
+
+        if(confirmPassword){
+
+            // check password and confirmPassword , both are same
+            if(password!==confirmPassword){
+                return toast.error("Password And Re-enter password not matching")  
+            }
+        }
+
+        //  now submitting the data on the server
+        userAuthThroughServer(serverRoute,formData)
+
     }
 
     return(
         <AnimationWrapper keyValue={type}>
             <section className="h-cover flex items-center justify-center">
-                <form ref={authForm} className="w-[80%] max-w-[400px]">
+                <Toaster />
+                <form id={"authFormElement"} className="w-[80%] max-w-[400px]">
                     <h1 className="text-4xl font=gelasio capitalize text-center mb-24">
                         {type=="signIn" ? "Welcome Back" : "Join Us Today"}
                     </h1>
 
                     {
                         type!="signIn" ?
-                        <InputBox name="fullname"  placeholder="Full Name" type="text" icon="fi-rr-user"/>
+                        <InputBox name="fullName"  placeholder="Full Name" type="text" icon="fi-rr-user"/>
                         :
                         ""
                     }
