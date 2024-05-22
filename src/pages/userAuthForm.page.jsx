@@ -4,19 +4,23 @@ import googlepng from "../imgs/google.png"
 // import component
 import {InputBox} from "../components/input.component";
 import {AnimationWrapper} from "../common/page-animation"
-import { Link, Outlet } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { Link, Navigate, Outlet } from "react-router-dom";
+import { useState, useEffect, useRef, useContext } from "react";
 
 // alert library
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { storeInSession } from "../common/session";
+import { UserContext } from "../App";
 
 
 
 
 const UserAuthForm = ({type}) =>{
-    
+
+    let {userAuth : {accessToken},setUserAuth}= useContext(UserContext)
+    console.log(accessToken);
+
     // http server connected 
     const userAuthThroughServer = (serverRoute , formData) =>{
         axios.post(import.meta.env.VITE_SERVER_DOMAIN+serverRoute , formData)
@@ -24,6 +28,7 @@ const UserAuthForm = ({type}) =>{
             console.log(data);
             storeInSession("user",JSON.stringify(data))
             console.log(sessionStorage);
+            setUserAuth(data)
         })
         .catch(({response})=>{
             toast.error(response.data.error)
@@ -100,6 +105,12 @@ const UserAuthForm = ({type}) =>{
     }
 
     return(
+        accessToken?
+        // if accessToken is persent then it will navigate to home 
+        // otherwise it will navigate to sign-in
+        
+        <Navigate to="/" />
+        :
         <AnimationWrapper keyValue={type}>
             <section className="h-cover flex items-center justify-center">
                 <Toaster />
