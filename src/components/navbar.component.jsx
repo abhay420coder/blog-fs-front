@@ -6,74 +6,44 @@ import { Link, Outlet } from "react-router-dom";
 
 // if i import any file don't put fileVariableNAme inside currly bracket because that works as default export
 import logo from "../imgs/logo.png"
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { UserContext } from "../App";
+import { UserNavigationPanel } from "./user-navigation.component";
 
 const devlogo = 'https://assets.zyrosite.com/m7VpbKKGQGTllx2l/ai-logo-mk3DJ9vN9Nf7N5xV.svg'
 
 const Navbar =() =>{
-    const [searchBoxVidibility , setSearchBoxVidibility ] = useState(false)
-    const handleSearchBoxVilisbility = () => setSearchBoxVidibility(!searchBoxVidibility)
+    const [searchBoxVisibility , setsearchBoxVisibility ] = useState(false)
+
+    const [userNavPanelVisibility, setUserNavPanelVisibility] = useState(false)
+    // getting userdata
+    let {userAuth ,userAuth : {accessToken, profileImg},setUserAuth}= useContext(UserContext)
+
+
+    // handle search box on lower than medium screen
+    const handleSearchBoxVisibility = () => setsearchBoxVisibility(!searchBoxVisibility)
+
+    // handle visiblity of User-Nav-Panel
+    // const handleUserNavPanelVisibility = () => setUserNavPanelVisibility(!userNavPanelVisibility)
+    const handleUserNavPanelVisibility = () => setUserNavPanelVisibility(currentValue => !currentValue)
+
+    const handleBlur = () => {
+        setTimeout(()=>{
+            setUserNavPanelVisibility(false);
+        },200)
+    }
+
+
     return (
         <>
-        <nav className="navbar">
-            {/* 
-                    // component store in variable
-                    login = <LoginForm />;
-                    signUp = <SignUp />
-                    user = {name:"Abhay" , loginComponent:<LoginForm />  , signUpComponent:<SignUp />}
-
-                    // Conditional rendering
-                    if (isLoggedIn) {
-                                        content = <AdminPanel />;
-                                    } else {
-                                        content = <LoginForm />;
-                                    }
-
-                    content = isLoggedIn : <AdminPanel /> ? <LoginForm />
-
-                    const products = [
-                                        { title: 'Cabbage', id: 1 },
-                                        { title: 'Garlic', id: 2 },
-                                        { title: 'Apple', id: 3 },
-                                    ];
-                    const listItems = products.map(product =>
-                                                        <li key={product.id}>
-                                                            {product.title}
-                                                        </li>
-                                                    );
-
-
-                    // className , style , attribute , rendring value and component
-                    <tag 
-                            attribute={variableName} attribute="value" attribute={"value"} attribute={"value1 " + "value 2"}
-                            className={variableName} className="value" className={"value"} className={"value1 " + "value 2"} 
-                            style={{"proprties":"value" , "proprties":variableName}}
-                    >    
-                            
-                            {user.name} Kumar // Displaying data 
-
-                            {user.loginComponent} // render component by using variable
-
-                            <MyComponent /> // render component
-
-                            
-
-                    </tag>
-                    <ul>{listItems}</ul>
-                    */
-                    
-                    
-                }
-
-
+        <nav className="navbar"> 
             {/* logo */}
-            <Link to="/">
-                
+            <Link to="/">  
                 <img src={devlogo} className={"flex-none w-10"} />
             </Link>
+
             {/* search */}
-        
-            <div className={"absolute bg-white w-full left-0 top-full mt-0.5 border-b border-grey py-4 px-[5vw] md:border-0 md:block md:relative md:inset-0 md:p-0 md:w-auto md:show " + (searchBoxVidibility ? "show" : "hide")}>
+            <div className={"absolute bg-white w-full left-0 top-full mt-0.5 border-b border-grey py-4 px-[5vw] md:border-0 md:block md:relative md:inset-0 md:p-0 md:w-auto md:show " + (searchBoxVisibility ? "show" : "hide")}>
 
                 <input type="text" placeholder="Search" className="w-full md:w-auto bg-grey p-4 pl-6 pr-[12%] md:pr-6 rounded-full placeholder:text-dark-grey  md:pl-12" />
 
@@ -81,10 +51,11 @@ const Navbar =() =>{
 
             </div>
 
+            
             <div className=" flex items-center gap-3 md:gap-6 ml-auto">
-                <button className="md:hidden bg-grey w-12 h-12 rounded-full flex items-center justify-center" onClick={handleSearchBoxVilisbility}>
+                <button className="md:hidden bg-grey w-12 h-12 rounded-full flex items-center justify-center" onClick={handleSearchBoxVisibility}>
 
-                {/* <button className="md:hidden bg-grey w-12 h-12 rounded-full flex items-center justify-center" onClick={()=> setSearchBoxVidibility(!searchBoxVidibility)}> */}
+                {/* <button className="md:hidden bg-grey w-12 h-12 rounded-full flex items-center justify-center" onClick={()=> setsearchBoxVisibility(!searchBoxVisibility)}> */}
 
                 <i className="fi fi-rr-search text-2xl"></i>
                 </button>
@@ -94,15 +65,45 @@ const Navbar =() =>{
                     {/* <p>write</p> */}
                 </Link>
 
-                <Link to="/signIn" className="btn-dark py-2" title="Log In">
-                    <i className="fi fi-rr-sign-in-alt"></i>
-                    {/* <p>Sign In</p> */}
-                </Link>
+                {
+                    accessToken
+                    ?
+                    <>
+                        <Link to="dashboard/notification">
+                            <button className="w-12 h-12 rounded-full bg-grey relative hover:bg-black/10">
+                                <i className="fi fi-rr-bell text-2xl block mt-1"></i>
+                            </button>
+                        </Link>
 
-                <Link to="/signUp" className="btn-light py-2 hidden" title="Sign Up">
-                    <i className="fi fi-br-exit"></i>
-                    {/* <p>Sign Up</p> */}
-                </Link>
+                        <div className="relative" onClick={handleUserNavPanelVisibility} onBlur={handleBlur}>
+                            <button className="w-12 h-12 mt-1" >
+                                <img src={profileImg} className="w-full h-full object-cover rounded-full" />
+                            </button>
+
+                            {
+                                userNavPanelVisibility 
+                                ? 
+                                <UserNavigationPanel  /> 
+                                : 
+                                ""
+                            }
+                        </div>
+                    </>
+                    :
+                    <>
+                        <Link to="/signIn" className="btn-dark py-2" title="Log In">
+                            <i className="fi fi-rr-sign-in-alt"></i>
+                            {/* <p>Sign In</p> */}
+                        </Link>
+
+                        <Link to="/signUp" className="btn-light py-2 hidden" title="Sign Up">
+                            <i className="fi fi-br-exit"></i>
+                            {/* <p>Sign Up</p> */}
+                        </Link>
+                    </>
+                }
+
+
             </div>
 
             {/* login */}

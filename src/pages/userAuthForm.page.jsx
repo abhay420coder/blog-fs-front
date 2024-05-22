@@ -46,8 +46,6 @@ const UserAuthForm = ({type}) =>{
         let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
 
-
-
         // getting form data after submitting the form
         let form = new FormData(authFormElement)
         let formData = {}
@@ -56,10 +54,6 @@ const UserAuthForm = ({type}) =>{
             formData[key] = value
         }
         console.log("form Data before validation" , formData);
-
-
-
-
 
 
         // form Validation
@@ -108,7 +102,7 @@ const UserAuthForm = ({type}) =>{
         accessToken?
         // if accessToken is persent then it will navigate to home 
         // otherwise it will navigate to sign-in
-        
+
         <Navigate to="/" />
         :
         <AnimationWrapper keyValue={type}>
