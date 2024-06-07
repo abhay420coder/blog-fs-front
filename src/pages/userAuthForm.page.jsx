@@ -12,6 +12,7 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { storeInSession } from "../common/session";
 import { UserContext } from "../App";
+import { authWIthGoogle } from "../common/firebase";
 
 
 
@@ -35,8 +36,10 @@ const UserAuthForm = ({type}) =>{
         })
     }
 
-    // ex:- email :- ak8294836065@hotmail.com    pass:-Amu@2020    Name:- Abhay Kumar
 
+
+    // ex:- email :- ak8294836065@hotmail.com    pass:-Amu@2020    Name:- Abhay Kumar
+    // handle form submit
     let handleSubmit = (e)=>{
         e.preventDefault();
 
@@ -98,6 +101,28 @@ const UserAuthForm = ({type}) =>{
 
     }
 
+
+
+    const handleGoogleAuth = (e) =>{
+        e.preventDefault();
+        console.log("google auth :- " , e);
+        // let user = authWIthGoogle();
+        authWIthGoogle()
+        .then(user=>{
+            console.log("user :- ",user);
+            let serverRoute = "/googleAuth"
+            let formData = {
+                accessToken : user.accessToken,
+            }
+            userAuthThroughServer(serverRoute,formData);
+        })
+        .catch(err=>{
+            toast.error("trouble log in through google")
+            return console.log("trouble log in through google :- " , err);
+        })
+        // console.log("user :- " , user);
+    }
+
     return(
         accessToken?
         // if accessToken is persent then it will navigate to home 
@@ -141,7 +166,7 @@ const UserAuthForm = ({type}) =>{
                     </div>
 
                     
-                    <button  className="btn-dark flex items-center justify-center gap-4 w-[90%] center"  >
+                    <button  className="btn-dark flex items-center justify-center gap-4 w-[90%] center" onClick={handleGoogleAuth}  >
                         <img src={googlepng} className="w-5"/>
                         <span>Continue With Google</span>
                     </button>
