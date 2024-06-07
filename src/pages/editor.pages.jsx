@@ -1,11 +1,16 @@
 import { UserContext } from "../App"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { Link, Navigate, Outlet } from "react-router-dom";
+import { BlogEditor } from "../components/blog-editor.component";
+import { PublishFormEditor } from "../components/publish-form.component";
 
 const Editor = () =>{
+    const [editorState , setEditorState] = useState("editor")
+
+
     // check user log in or not
     let {userAuth : {accessToken},setUserAuth}= useContext(UserContext)
-    console.log(accessToken)
+    // console.log(accessToken)
 
 
 
@@ -20,7 +25,13 @@ const Editor = () =>{
         :
 
         <>
-            <h1> hi I am editor page </h1>
+            {
+            editorState =="editor" 
+            ?
+            <BlogEditor />
+            :
+            <PublishFormEditor />
+            }
         </>
     )
 }
